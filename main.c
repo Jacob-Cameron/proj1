@@ -9,7 +9,7 @@ int main() {
     letters(alphabet, 26); //Setting elements to ASCII numbers for letters
     int a = 11; //number of letters including spaces
     char text[a];
-    sprintf(text, "HELLO WORLD");
+    sprintf(text, "HELLO WORLD"); //creates a string with elements as the letters
     
 //    for(int i = 0; i <26; i++) {
 //    printf("%c\n", alphabet[i]); //Print the alphabet by converting ASCII numbers to their respective letters
@@ -30,6 +30,8 @@ int main() {
     return 0;
     
  }
+ 
+ //would like to create a function that counts the number of letters and spaces in a given text
  
  //Setting alphabet
  void letters(char *x, int N) { //Function to set letters
