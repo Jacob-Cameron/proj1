@@ -1,7 +1,9 @@
 Task list:
-1 = Rotation Cipher Encryption given key
-2 = Rotation Cipher Decryption given key
-
-Task to be performed: 1
+1 = Rotation Cipher Encryption Given Key
+2 = Rotation Cipher Decryption Given Key
+3 = Substitution Cipher Encryption Given Key
+4 = Substitution Cipher Decryption Given Key
+Task to be performed: 3
 Rotation key: 01
+Subsitution key: QAZXSWEDCVFRTGBNHYUJMKILOP
 Message to Encrypt/Decrypt: HELLO WORLD 
