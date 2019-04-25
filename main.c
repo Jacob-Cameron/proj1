@@ -10,7 +10,7 @@ int main() {
     input = fopen("input.txt", "r"); //Sets input.txt as a file to be read
     int option;
     fseek(input, 210, 0); //Jumps to part in file where task selection is chosen = option
-    fscanf(input, "%d", &option);
+    fscanf(input, "%d", &option); //Reads option choice
     switch(option) { //Depending on the option chosen in the file, the switch case will chose a function to run
         case 1: RotationCipherEncryption();
             break;
@@ -42,17 +42,17 @@ void RotationCipherEncryption(void) {
     fscanf(input, "%d", &k); //Assigns the key value to k
     fseek(input, 304, 0); //Jumps to text to be encrypted in the file
     
-    while(!feof(input)) { //If the file is not at the end, this loop will continue to encrypt letters
+    while(feof(input) == 0) { //If the file is not at the end, this loop will continue to encrypt letters
         char c;
         fscanf(input, "%c", &c); //Reads letter
         
-        if(c != 32) { //If character is not a space, it will be encrypted. If it is a space, it will be left as 
+        if(c != ' ') { //If character is not a space, it will be encrypted. If it is a space, it will be left as 
                       //a space and not encrypted
             while(k > 26) { //If the key is greater than 26 it will be brought back to a number between 1 and 
                             //26. This can occur multiple times if the key is very large
                 k = k - 26;
             }
-            if(c + k >90) { //If the key will overflow to some other non-letter character, it will be brought 
+            if(c + k > 'Z') { //If the key will overflow to some other non-letter character, it will be brought 
                             //back to the start of the alphabet to its letter
                 c = c + k - 26;
             }
@@ -83,17 +83,17 @@ void RotationCipherDecryption(void) {
     fscanf(input, "%d", &k); //Assigns the key value to k
     fseek(input, 304, 0); //Jumps to text to be decrypted in the file
     
-    while(!feof(input)) { //If the file is not at the end, this loop will continue to decrypt letters
+    while(feof(input) == 0) { //If the file is not at the end, this loop will continue to decrypt letters
         char c;
         fscanf(input, "%c", &c); //Reads letter
         
-        if(c != 32) { //If the character is not a space, it will be decrypted. If it is a space, it will be left
+        if(c != ' ') { //If the character is not a space, it will be decrypted. If it is a space, it will be left
                       //as a space and not encrypted
             while(k > 26) { //If the key is greater than 26 it will be brought back to a number between 1 and 
                             //26. This can occur multiple times if the key is very large
                 k = k - 26;
             }
-            if(c - k < 65) { //If the key will overflow to some other non-letter character, it will be brought 
+            if(c - k < 'A') { //If the key will overflow to some other non-letter character, it will be brought 
                             //back to the end of the alphabet to its letter
                 c = c - k + 26;
             }
@@ -122,13 +122,13 @@ void SubstitutionCipherEncryption(void) {
     FILE *input;
     input = fopen("input.txt", "r"); //Opens the input.txt file for reading
     fseek(input, 304, 0); //Jumps to given text to be encrypted
-    while(!feof(input)) { //If the file is not at the end, this loop will continue to encrypt letters
+    while(feof(input) == 0) { //If the file is not at the end, this loop will continue to encrypt letters
         int p = ftell(input); //Assignment to remember point in the text to use later to continue
                               //encryption. The file jumps to other points so needs a memory of where
                               //it was initially
         char c;
         fscanf(input, "%c", &c); //Reads the character
-        if(c == 32) { //If the character is a space, print a space and go to the next character
+        if(c == ' ') { //If the character is a space, print a space and go to the next character
             printf(" ");
             }
         else { //If the character is not a space, find the letters place in the normal alphabet and 
@@ -162,13 +162,13 @@ void SubstitutionCipherDecryption(void) {
     FILE *input;
     input = fopen("input.txt", "r"); //Opens the input.txt file for reading
     fseek(input, 304, 0); //Jumps to the encrypted text given
-    while(!feof(input)) { //If the file is not at the end, this loop will continue to decrypt letters
+    while(feof(input) == 0) { //If the file is not at the end, this loop will continue to decrypt letters
         int p = ftell(input); //The place in the given text is stored, so that when the file is accessed
                               //at different points the point in the given text is 'remembered'. This 
                               //value is later used to jump to the next letter in the text to decrypt it.
         char c;
         fscanf(input, "%c", &c); //Reads the encrypted character
-        if(c == 32) { //If the character is a space, print a space. Else decrypt the character
+        if(c == ' ') { //If the character is a space, print a space. Else decrypt the character
             printf(" ");
         } else { //If the character is not a space, find the character's place in the given key and print
                  //the corresponding decrpyted character
