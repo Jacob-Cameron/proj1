@@ -1,42 +1,76 @@
-#include <stdio.h>
+#include<stdio.h>
 
-//The argument for encryption and decryption is the key of rotation
-void Rotation_Encryption(int k);
-void Rotation_Decryption(int key);
+void RotationCipherEncryption(void);
+void RotationCipherDecryption(void);
 
-int main()
-{
-    Rotation_Encryption(1); 
-    Rotation_Decryption(1);
+int main() {
+    FILE *input;
+    input = fopen("input.txt", "r");
+    int option;
+    fseek(input, 99, 0);
+    fscanf(input, "%d", &option);
+    switch(option) {
+        case 1: RotationCipherEncryption();
+            break;
+        case 2: RotationCipherDecryption();
+            break;
+    }
     return 0;
 }
 
-//This function encrypts a given message by a given key
-void Rotation_Encryption(int key) {
-    char input[] = "HELLO WORLD";
-    int n = sizeof(input) - 1;
-    for(int i = 0; i < n; i++) {
-        input[i] = input[i] + key%26;
-        if(input[i] > 90) {
-            input[i] = input[i] - 26;
-        } else if(input[i] - key%26 == 32) {
-            input[i] = 32;
+void RotationCipherEncryption(void) {
+    FILE *input;
+    input = fopen("input.txt", "r");
+    int k;
+    fseek(input, 107, 0);
+    fscanf(input, "%d", &k);
+    fseek(input, 140, 0);
+    
+    while(!feof(input)) {
+        char c;
+        fscanf(input, "%c", &c);
+        
+        if(c != 32) {
+            while(k > 26) {
+                k = k - 26;
+            }
+            if(c + k >90) {
+                c = c + k - 26;
+            }
+
+            else
+            c = c + k;
         }
+        
+        printf("%c", c);
     }
-    printf("%s \n", input);    
 }
 
-//This function decrypts a message given the key and the encrypted text
-void Rotation_Decryption(int key) {
-    char input[] = "IFMMP XPSME";
-    int n = sizeof(input) - 1;
-    for(int i = 0; i < n; i++) {
-        input[i] = input[i] - key%26;
-        if(input[i] + key%26 == 32) {
-            input[i] = 32;
-        } else if(input[i] < 65) {
-            input[i] = input[i] + 26;
+void RotationCipherDecryption(void) {
+        FILE *input;
+    input = fopen("input.txt", "r");
+    int k;
+    fseek(input, 107, 0);
+    fscanf(input, "%d", &k);
+    fseek(input, 140, 0);
+    
+    while(!feof(input)) {
+        char c;
+        fscanf(input, "%c", &c);
+        
+        if(c != 32) {
+            while(k > 26) {
+                k = k - 26;
+            }
+            if(c - k < 65) {
+                c = c - k + 26;
+            }
+
+            else
+            c = c - k;
         }
+        
+        printf("%c", c);
     }
-    printf("%s \n", input);
+    return;
 }
