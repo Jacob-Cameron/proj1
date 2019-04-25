@@ -1,0 +1,7 @@
+Task list:
+1 = Rotation Cipher Encryption given key
+2 = Rotation Cipher Decryption given key
+
+Task to be performed: 1
+Rotation key: 01
+Message to Encrypt/Decrypt: HELLO WORLD
