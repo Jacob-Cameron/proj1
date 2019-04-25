@@ -2,12 +2,14 @@
 
 void RotationCipherEncryption(void);
 void RotationCipherDecryption(void);
+//void SubstitutionCipherEncryption(void);
+//void SubstitutionCipherDecryption(void);
 
 int main() {
     FILE *input;
     input = fopen("input.txt", "r");
     int option;
-    fseek(input, 99, 0);
+    fseek(input, 120, 0);
     fscanf(input, "%d", &option);
     switch(option) {
         case 1: RotationCipherEncryption();
@@ -22,9 +24,9 @@ void RotationCipherEncryption(void) {
     FILE *input;
     input = fopen("input.txt", "r");
     int k;
-    fseek(input, 107, 0);
+    fseek(input, 137, 0);
     fscanf(input, "%d", &k);
-    fseek(input, 140, 0);
+    fseek(input, 169, 0);
     
     while(!feof(input)) {
         char c;
@@ -50,9 +52,9 @@ void RotationCipherDecryption(void) {
         FILE *input;
     input = fopen("input.txt", "r");
     int k;
-    fseek(input, 107, 0);
+    fseek(input, 137, 0);
     fscanf(input, "%d", &k);
-    fseek(input, 140, 0);
+    fseek(input, 169, 0);
     
     while(!feof(input)) {
         char c;
@@ -74,3 +76,7 @@ void RotationCipherDecryption(void) {
     }
     return;
 }
+
+//void SubstitutionCipherEncryption(void) {
+//    
+//}
