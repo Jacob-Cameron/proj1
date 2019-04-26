@@ -4,12 +4,13 @@ void RotationCipherEncryption(void);
 void RotationCipherDecryption(void);
 void SubstitutionCipherEncryption(void);
 void SubstitutionCipherDecryption(void);
+void RotationCipherDecryptionNoKey(void);
 
 int main() {
     FILE *input;
     input = fopen("input.txt", "r"); //Sets input.txt as a file to be read
     int option;
-    fseek(input, 210, 0); //Jumps to part in file where task selection is chosen = option
+    fseek(input, 249, 0); //Jumps to part in file where task selection is chosen = option
     fscanf(input, "%d", &option); //Reads option choice
     switch(option) { //Depending on the option chosen in the file, the switch case will chose a function to run
         case 1: RotationCipherEncryption();
@@ -19,6 +20,8 @@ int main() {
         case 3: SubstitutionCipherEncryption();
             break;
         case 4: SubstitutionCipherDecryption();
+            break;
+        case 5: RotationCipherDecryptionNoKey();
             break;
     }
     return 0;
@@ -38,9 +41,9 @@ void RotationCipherEncryption(void) {
     FILE *input;
     input = fopen("input.txt", "r");//Opens the input.txt file for reading
     int k;
-    fseek(input, 227, 0); //Finds the key given in the file
+    fseek(input, 266, 0); //Finds the key given in the file
     fscanf(input, "%d", &k); //Assigns the key value to k
-    fseek(input, 304, 0); //Jumps to text to be encrypted in the file
+    fseek(input, 343, 0); //Jumps to text to be encrypted in the file
     
     while(feof(input) == 0) { //If the file is not at the end, this loop will continue to encrypt letters
         char c;
@@ -79,9 +82,9 @@ void RotationCipherDecryption(void) {
     FILE *input;
     input = fopen("input.txt", "r"); //Opens the input.txtfile for reading
     int k;
-    fseek(input, 227, 0); //Finds the key given in the file
+    fseek(input, 266, 0); //Finds the key given in the file
     fscanf(input, "%d", &k); //Assigns the key value to k
-    fseek(input, 304, 0); //Jumps to text to be decrypted in the file
+    fseek(input, 343, 0); //Jumps to text to be decrypted in the file
     
     while(feof(input) == 0) { //If the file is not at the end, this loop will continue to decrypt letters
         char c;
@@ -121,7 +124,7 @@ void RotationCipherDecryption(void) {
 void SubstitutionCipherEncryption(void) {
     FILE *input;
     input = fopen("input.txt", "r"); //Opens the input.txt file for reading
-    fseek(input, 304, 0); //Jumps to given text to be encrypted
+    fseek(input, 343, 0); //Jumps to given text to be encrypted
     while(feof(input) == 0) { //If the file is not at the end, this loop will continue to encrypt letters
         int p = ftell(input); //Assignment to remember point in the text to use later to continue
                               //encryption. The file jumps to other points so needs a memory of where
@@ -135,7 +138,7 @@ void SubstitutionCipherEncryption(void) {
                //using the key, find the corresponding encryption character in the same place in 
                //the key alphabet
             c = c - 65; //Find character's place in the alphabet
-            fseek(input, 248 + c, 0); //Jump to key alphabet and find corresponding character in the 
+            fseek(input, 287 + c, 0); //Jump to key alphabet and find corresponding character in the 
                                       //same place
             fscanf(input, "%c", &c); //Assign this encrypted character to c
             printf("%c", c); //Print encrypted letter to console
@@ -161,7 +164,7 @@ void SubstitutionCipherEncryption(void) {
 void SubstitutionCipherDecryption(void) {
     FILE *input;
     input = fopen("input.txt", "r"); //Opens the input.txt file for reading
-    fseek(input, 304, 0); //Jumps to the encrypted text given
+    fseek(input, 343, 0); //Jumps to the encrypted text given
     while(feof(input) == 0) { //If the file is not at the end, this loop will continue to decrypt letters
         int p = ftell(input); //The place in the given text is stored, so that when the file is accessed
                               //at different points the point in the given text is 'remembered'. This 
@@ -176,12 +179,12 @@ void SubstitutionCipherDecryption(void) {
             while(loop >= 0) { //This loop checks to see if the character's ASCII number is equal to the 
                                //character in the key. If it is, print the corresponding decrypted
                                //character. If not, check the next letter in the key. Rinse and repeat...
-                fseek(input, 248 + loop, 0); //Jumps to a certain character in the key
+                fseek(input, 287 + loop, 0); //Jumps to a certain character in the key
                 char cs; //Uninitialised variable for the key character
                 fscanf(input, "%c", &cs); //Reads key character
                 if(c == cs) { //If the key character and the text character are the same, print the
                               //corresponding decrypted letter
-                    char decrypt = ftell(input) - 248; //Finds the place in the key e.g. first, second...
+                    char decrypt = ftell(input) - 287; //Finds the place in the key e.g. first, second...
                     c = 64 + decrypt; //Assigns c a new value as the decrypted letter
                     printf("%c", c);
                     loop = -1; //Breaks condition for loop so the next letter in the text can be tested
@@ -194,4 +197,98 @@ void SubstitutionCipherDecryption(void) {
         fseek(input, p + 1, 0); //Increment p to jump to the next letter of the text
     }
     return;
+}
+
+/*ROTATION_CIPHER_DECRYPTION_NO_KEY
+ * 
+ */
+void RotationCipherDecryptionNoKey(void) {
+    FILE *input;
+    input = fopen("input.txt", "r");
+    fseek(input, 343, 0);
+    int A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0, K = 0, L = 0, M = 0, N = 0, O = 0, P = 0, Q = 0, R = 0, S = 0, T = 0, U = 0, V = 0, W = 0, X = 0, Y = 0, Z = 0;
+    char c;
+    while(!feof(input)) {
+        fscanf(input, "%c", &c);
+        switch(c) {
+            case 65: A++;
+                break;
+            case 66: B++;
+                break;
+            case 67: C++;
+                break;
+            case 68: D++;
+                break;
+            case 69: E++;
+                break;
+            case 70: F++;
+                break;
+            case 71: G++;
+                break;
+            case 72: H++;
+                break;
+            case 73: I++;
+                break;
+            case 74: J++;
+                break;
+            case 75: K++;
+                break;
+            case 76: L++;
+                break;
+            case 77: M++;
+                break;
+            case 78: N++;
+                break;
+            case 79: O++;
+                break;
+            case 80: P++;
+                break;
+            case 81: Q++;
+                break;
+            case 82: R++;
+                break;
+            case 83: S++;
+                break;
+            case 84: T++;
+                break;
+            case 85: U++;
+                break;
+            case 86: V++;
+                break;
+            case 87: W++;
+                break;
+            case 88: X++;
+                break;
+            case 89: Y++;
+                break;
+            case 90: Z++;
+                break;
+        }
+    }
+    int letters[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
+    int location, n, maximum = 0;
+    for(n = 0; n < 26; n++) {
+        if(letters[n] > maximum) {
+            location = n;
+            maximum = letters[n];
+        }
+    }
+    char k = location - 4;
+    fseek(input, 343, 0);
+    while(!feof(input)) {
+        fscanf(input, "%c", &c);
+        if(c == ' ') {
+            printf(" ");
+        } else if(c - k < 65) {
+            c = c - k + 26;
+            printf("%c", c);
+        } else if(c - k > 90) {
+            c = c - k -26;
+            printf("%c", c);
+        } else {
+            c = c - k;
+            printf("%c", c);
+        }
+    }
+
 }
