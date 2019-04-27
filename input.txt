@@ -4,7 +4,7 @@ Task list:
 3 = Substitution Cipher Encryption Given Key
 4 = Substitution Cipher Decryption Given Key
 5 = Rotation Cipher Decryption No Key
-Task to be performed: 2
-Rotation key: 07
+Task to be performed: 5
+Rotation key: 10
 Subsitution key: QAZXSWEDCVFRTGBNHYUJMKILOP
-Message to Encrypt/Decrypt: HELLO WORLD 
+Message to Encrypt/Decrypt: "DRO QYYN XOGC SC DRKD DRO WYWOXD IYE NOMSNO DRKD GRKD IYE UXYG SC WYBO SWZYBDKXD DRKX GRKD IYE RKFO LOOX DKEQRD DY LOVSOFO, IYE GSVV RKFO CRSPDON QOKBC SX IYEB AEOCD PYB KLEXNKXMO. CEMMOCC MYWOC PBYW GSDRSX, XYD PBYW GSDRYED." - OVSO GSOCOV 
