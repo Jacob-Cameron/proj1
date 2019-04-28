@@ -1,15 +1,35 @@
+/*******************************************************************
+ * ENGG1003 Project 1: English Text Ciphers
+ * 
+ * Student number: c3306038
+ * Due date: Monday, 5pm, 29/04/2019
+ * Last change: 29/04/2019
+ * 
+ * Code synopsis:
+ * This code includes a variety of functions to encrypt and decrypt
+ * plain english text. The ciphers considered include the rotation
+ * (Caesar) cipher and the substitution cipher. The functions 
+ * encrypt and decrypt these ciphers when given a key. An input
+ * and output file are used for reading and writing respectively,
+ * where the text can be read, a task can be selected and the key
+ * given. When no key is given, a statistical approach is taken to 
+ * give the most likely outcome for rotation cipher decryption and 
+ * likely letter decryption for the substiution cipher for a 
+ * significant number of letters.
+ ******************************************************************/
+
 #include<stdio.h>
 #include<stdlib.h>
 
 
-#define INPUT_FILE      "input.txt"
-#define OUTPUT_FILE     "output.txt"
+#define INPUT_FILE      "input.txt"                    //Defining "input.txt" as INPUT_FILE for easier reading and understanding for the user
+#define OUTPUT_FILE     "output.txt"                   //Defining "output.txt" as OUTPUT_FILE for easier reading and understanding for the user
 
 
-void RotationCipherEncryption(void);
-void RotationCipherDecryption(void);
-void SubstitutionCipherEncryption(void);
-void SubstitutionCipherDecryption(void);
+void RotationCipherEncryptionGivenKey(void);           //Function prototypes
+void RotationCipherDecryptionGivenKey(void);
+void SubstitutionCipherEncryptionGivenKey(void);
+void SubstitutionCipherDecryptionGivenKey(void);
 void RotationCipherDecryptionNoKey(void);
 void SubstitutionCipherDecryptionNoKey(void);
 
@@ -17,23 +37,23 @@ void SubstitutionCipherDecryptionNoKey(void);
 int main() 
 {
     FILE *input;
-    input = fopen(INPUT_FILE, "r");                   //Sets input.txt as a file to be read
-    if(input == NULL) {
+    input = fopen(INPUT_FILE, "r");                    //Sets input.txt as a file to be read
+    if(input == NULL) {                                //If an error occurs opening the input file, a friendly error message will be printed and the functions will not do anything
         perror("fopen() ");
         return 0;
     }
     int option;
     fseek(input, 292, 0);                              //Jumps to part in file where task selection is chosen = option
     fscanf(input, "%d", &option);                      //Reads option choice
-    fclose(input);
+    fclose(input);                                     //Closes the input file
     switch(option) {                                   //Depending on the option chosen in the file, the switch case will chose a function to run
-        case 1: RotationCipherEncryption();
+        case 1: RotationCipherEncryptionGivenKey();
             break;
-        case 2: RotationCipherDecryption();
+        case 2: RotationCipherDecryptionGivenKey();
             break;
-        case 3: SubstitutionCipherEncryption();
+        case 3: SubstitutionCipherEncryptionGivenKey();
             break;
-        case 4: SubstitutionCipherDecryption();
+        case 4: SubstitutionCipherDecryptionGivenKey();
             break;
         case 5: RotationCipherDecryptionNoKey();
             break;
@@ -44,25 +64,32 @@ int main()
 }
 
 
-/*ROTATION_CIPHER_ENCRYPTION
+/*ROTATION_CIPHER_ENCRYPTION_GIVEN_KEY
  * 
  * This function encrypts given text from the file input.txt using a rotation cipher.
+ * This function accepts a given text which can include any character but all letters must be upper case. The text
+ * must also be followed by a space at the end of it for the encryption of the file to work as it should be working.
  * Put simply, the function adds some number to the number for each letter on the ASCII table to rotate it to some 
  * other letter. If the number is greater than 90 it will overflow to other characters and so must be brought back 
  * to the desired letters. If the key for rotation given is greater than 26, the key will be brought back to some 
- * number between 1 and 26 since this is equivalent rotation. The key must be a two digit positive number 
- * (0 <= key < 100).
+ * number between 1 and 26 since this is equivalent rotation. The key must be a two digit positive number e.g. 1=01
+ * (00 <= key < 100). The output comes in the same form as the input an is printed to the console and also printed
+ * to the output file.
  *
  */
-void RotationCipherEncryption(void) 
+void RotationCipherEncryptionGivenKey(void) 
 {
     FILE *input, *output;
-    input = fopen(INPUT_FILE, "r");                   //Opens the input.txt file for reading
-    if(input == NULL) {
+    input = fopen(INPUT_FILE, "r");                    //Opens the input.txt file for reading
+    if(input == NULL) {                                //If an error occurs opening the input file, a friendly error message will be printed and the functions will not do anything
         perror("fopen() ");
         return;
     }
-    output = fopen(OUTPUT_FILE, "w");                 //Opens the output.txt file for writing
+    output = fopen(OUTPUT_FILE, "w");                  //Opens the output.txt file for writing
+    if(output == NULL) {                               //If an error occurs opening the output file, a friendly error message will be printed and the functions will not do anything
+        perror("fopen() ");
+        return;
+    }
     int k;
     fseek(input, 309, 0);                              //Finds the key given in the file
     fscanf(input, "%d", &k);                           //Assigns the key value to k
@@ -83,29 +110,36 @@ void RotationCipherEncryption(void)
         fprintf(output, "%c", c);                      //Prints to output.txt file
         printf("%c", c);                               //Print the encrypted letter to the console
     }
-    fclose(input);
-    fclose(output);
+    
+    fclose(input);                                     //Closes the input file
+    fclose(output);                                    //Closes the output file
 }
 
 
-/*ROTATION_CIPHER_DECRYPTION
+/*ROTATION_CIPHER_DECRYPTION_GIVEN_KEY
  * 
  * This function decrypts given text from the file input.txt which has been encrypted with a rotation cipher.
+ * The given text can include any characters but all letters must be upper case for the decryption to work.
  * This function works similarly to the above encryption file, instead subtracting the key to decrypt the text 
  * rather than adding the key to encrypt the text. If the number becomes less than 65, 26 is added to assign
  * the letter the correct character as it 'overflows' to the other end of the alphabet. The key must be a two
- * digit positive number (0 <= key < 100).
+ * digit positive number (0 <= key < 100). The output text comes in the same form as the given input text, and 
+ * is printed to the console and the output file.
  *
  */
-void RotationCipherDecryption(void) 
+void RotationCipherDecryptionGivenKey(void) 
 {
     FILE *input, *output;
-    input = fopen(INPUT_FILE, "r");                   //Opens the input.txtfile for reading
-    if(input == NULL) {
+    input = fopen(INPUT_FILE, "r");                    //Opens the input.txtfile for reading
+    if(input == NULL) {                                //If an error occurs opening the input file, a friendly error message will be printed and the functions will not do anything
         perror("fopen() ");
         return;
     }
-    output = fopen(OUTPUT_FILE, "w");                 //Opens the output.txt file for writing
+    output = fopen(OUTPUT_FILE, "w");                  //Opens the output.txt file for writing
+    if(output == NULL) {                               //If an error occurs opening the output file, a friendly error message will be printed and the functions will not do anything
+        perror("fopen() ");
+        return;
+    }
     int k;
     fseek(input, 309, 0);                              //Finds the key given in the file
     fscanf(input, "%d", &k);                           //Assigns the key value to k
@@ -128,31 +162,38 @@ void RotationCipherDecryption(void)
         printf("%c", c);                               //Print the decrypted letter to the console
     }
     
-    fclose(input);
-    fclose(output);
+    fclose(input);                                     //Closes the input file
+    fclose(output);                                    //Closes the output file
     return;
 }
 
 
-/*SUBSTITUTION_CIPHER_ENCRYPTION
+/*SUBSTITUTION_CIPHER_ENCRYPTION_GIVEN_KEY
  * 
  * This function encrypts given text in the input.txt file using a substitution cipher.
+ * The given text can include any character but all letters must be upper case for the correct encryption.
  * This function finds each character's place in the alphabet (e.g. a = 0, b = 1...) and assigns each letter
- * a new encrypted character given in the substitution key using each characters' place that was found. This
- * function stores where it is up to in reading the text since it jumps to other spots to encrypt it so must
- * 'remember' where it was up to in order to keep encrypting the text. The key given must be in upper case
- * letters, be 26 characters long and should include each letter once. Letters can be given in any order.
+ * a new encrypted character given in the substitution key using each characters' place that was found. The
+ * key must be given as 26 consecutive upper case letters e.g. ABCDEFGHIJKLMNOPQRSTUVWXYZ for encryption. This
+ * function stores where it is up to in reading the text since it jumps to other spots to encrypt, so must
+ * 'remember' where it was up to in order to keep encrypting the text. Letters in the key can be given in any order.
+ * Each letter should only be used once each in the key.
+ * The encrypted output text is printed to the console and the ouput file in the same form as the given text.
  *
  */
-void SubstitutionCipherEncryption(void) 
+void SubstitutionCipherEncryptionGivenKey(void) 
 {
     FILE *input, *output;
-    input = fopen(INPUT_FILE, "r");                   //Opens the input.txt file for reading
-    if(input == NULL) {
+    input = fopen(INPUT_FILE, "r");                    //Opens the input.txt file for reading
+    if(input == NULL) {                                //If an error occurs opening the input file, a friendly error message will be printed and the functions will not do anything
         perror("fopen() ");
         return;
     }
-    output = fopen(OUTPUT_FILE, "w");                 //Opens the output.txt file for writing
+    output = fopen(OUTPUT_FILE, "w");                  //Opens the output.txt file for writing
+    if(output == NULL) {                               //If an error occurs opening the output file, a friendly error message will be printed and the functions will not do anything
+        perror("fopen() ");
+        return;
+    }
     fseek(input, 386, 0);                              //Jumps to given text to be encrypted
     while(feof(input) == 0) {                          //If the file is not at the end, this loop will continue to encrypt letters
         int p = ftell(input);                          //Assignment to remember point in the text to use later to continue encryption. The file jumps to other points so needs a memory of where it was initially
@@ -169,33 +210,39 @@ void SubstitutionCipherEncryption(void)
         fseek(input, p + 1, 0);                        //Use the stored starting place and add 1 to move to next character in the given text
     }
     
-    fclose(input);
-    fclose(output);
+    fclose(input);                                     //Closes the input file
+    fclose(output);                                    //Closes the output file
     return;
 }
 
 
-/*SUBSTITUTION_CIPHER_DECRYPTION
+/*SUBSTITUTION_CIPHER_DECRYPTION_GIVEN_KEY
  * 
  * This function decrypts an encrypted text that was encrypted using a substitution cipher and a key.
- * The key must come in the form of 26 upper case letters, where each letter should only be used once.
- * The first letter encrypts the letter A, the second B, the third C... The twenty sixth letter Z.
- * The letters can come in any order. This function turns a letter into its corresponding number on the
- * ASCII table and checks through the key given to find the place of the letter in the key. The place 
- * Corresponds to a decrypted letter and this letter is printed to the console. For example, if H was 
- * the fifth letter of the key, it would be printed as an E. This process loops until the end of the 
- * file is reached which is equivalent to the end of the encrypted text.
+ * The given text can include any character but letters must be upper case for the correct decryption.
+ * The key must come in the form of 26 upper case letters e.g. ABCDEFGHIJKLMNOPQRSTUVWXYZ , where each 
+ * letter should only be used once. The first letter encrypts the letter A, the second B, the third C... 
+ * The twenty sixth letter Z. The letters can come in any order. This function turns a letter into its 
+ * corresponding number on the ASCII table and checks through the key given to find the place of the 
+ * letter in the key. The place Corresponds to a decrypted letter and this letter is printed to the console. 
+ * For example, if H was  the fifth letter of the key, it would be printed as an E. This process loops until 
+ * the end of the file is reached which is equivalent to the end of the encrypted text. The decrypted output 
+ * text comes in the same form as the input text and is printed to the console and the output file.
  * 
  */
-void SubstitutionCipherDecryption(void) 
+void SubstitutionCipherDecryptionGivenKey(void) 
 {
     FILE *input, *output;
-    input = fopen(INPUT_FILE, "r");                   //Opens the input.txt file for reading
-    if(input == NULL) {
+    input = fopen(INPUT_FILE, "r");                    //Opens the input.txt file for reading
+    if(input == NULL) {                                //If an error occurs opening the input file, a friendly error message will be printed and the functions will not do anything
         perror("fopen() ");
         return;
     }
-    output = fopen(OUTPUT_FILE, "w");                 //Opens the output.txt file for writing
+    output = fopen(OUTPUT_FILE, "w");                  //Opens the output.txt file for writing
+    if(output == NULL) {                               //If an error occurs opening the output file, a friendly error message will be printed and the functions will not do anything
+        perror("fopen() ");
+        return;
+    }
     fseek(input, 386, 0);                              //Jumps to the encrypted text given
     while(feof(input) == 0) {                          //If the file is not at the end, this loop will continue to decrypt letters
         int p = ftell(input);                          //The place in the given text is stored, so that when the file is accessed at different points the point in the given text is 'remembered'. This value is later used to jump to the next letter in the text to decrypt it.
@@ -225,36 +272,42 @@ void SubstitutionCipherDecryption(void)
         fseek(input, p + 1, 0);                        //Increment p to jump to the next letter of the text
     }
     
-    fclose(input);
-    fclose(output);
+    fclose(input);                                     //Closes the input file
+    fclose(output);                                    //Closes the output file
     return;
 }
 
 
 /*ROTATION_CIPHER_DECRYPTION_NO_KEY
  * 
- * This function decrypts a given text that was encrypted with a rotation cipher with some key. The idea behind
+ * This function decrypts a given text that was encrypted with a rotation cipher with some key. The given text
+ * can include any character but letters must all be upper case for correct decryption to occur. The idea behind
  * this decryption function is by assuming the most common letter in the given text is an 'E' - so the key can
  * be found by finding the most common encrypted letter and finding how many places it is away from  'E' and 
  * using this as the key for decryption. The frequenecy of each letter is counted and the most frequent letter 
  * will give the greatest value - assumed to be 'E'. This function must receive text from the input.txt file
  * and must be all upper case letters and can include spaces and special characters. This function will only 
- * decrypt correctly IF AND ONLY IF the most common letter in the decrypted message is the letter 'E'.
+ * decrypt correctly IF AND ONLY IF the most common letter in the decrypted message is the letter 'E'. The output
+ * text comes in the same form as the given text and is printed to the console and the output file.
  * 
  */
 void RotationCipherDecryptionNoKey(void) 
 {
     FILE *input, *output;
-    input = fopen(INPUT_FILE, "r");                   //Opens the file input.txt for reading
-    if(input == NULL) {
+    input = fopen(INPUT_FILE, "r");                    //Opens the file input.txt for reading
+    if(input == NULL) {                                //If an error occurs opening the input file, a friendly error message will be printed and the functions will not do anything
         perror("fopen() ");
         return;
     }
-    output = fopen(OUTPUT_FILE, "w");                 //Opens the output.txt file for writing
+    output = fopen(OUTPUT_FILE, "w");                  //Opens the output.txt file for writing
+    if(output == NULL) {                               //If an error occurs opening the output file, a friendly error message will be printed and the functions will not do anything
+        perror("fopen() ");
+        return;
+    }
     fseek(input, 386, 0);                              //Jump to given encrypted text
     //Below - the variables initialised are for the letters of the alphabet that are going to be counted
     int A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0, K = 0, L = 0, M = 0, N = 0, O = 0, P = 0, Q = 0, R = 0, S = 0, T = 0, U = 0, V = 0, W = 0, X = 0, Y = 0, Z = 0;
-    char c;
+    char c;                                            //This variable is assigned letters read
     while(!feof(input)) {                              //While the file is not at the end, this loop will continue to run
         fscanf(input, "%c", &c);                       //Read a character
         switch(c) {                                    //If the character is a letter, one of the cases are true and the letter variable will be incremented by one, representing the frequency of that particular letter
@@ -326,7 +379,7 @@ void RotationCipherDecryptionNoKey(void)
         }
     }
     
-    int k = location - 4;                             //The key 'k' is derived by assuming the most frequent letter was an 'E'
+    int k = location - 4;                              //The key 'k' is derived by assuming the most frequent letter was an 'E'
     printf("Key = %d\n\n", k);
     fprintf(output, "Key = %d\n\n", k);
     fseek(input, 386, 0);                              //Jump back from the end of the file to the start of the encrypted text
@@ -350,26 +403,42 @@ void RotationCipherDecryptionNoKey(void)
         }
     }
     
-    fclose(input);
-    fclose(output);
+    fclose(input);                                     //Closes the input file
+    fclose(output);                                    //Closes the output file
     return;
 }
 
 
 /*SUBSTITUTION_CIPHER_DECRYPTION_NO_KEY
  * 
+ * This function aims to decrypt a given encrypted message that was encrypted with a substitution cipher.
+ * The text must be given in the input file, taking any character but any letters must be upper case. The
+ * approach taken for this decryption involves assuming the most common letter in the text is an encrypted
+ * 'E', the second most 'T', the third most 'A' etc... This approach is purely statistical and usually can
+ * decrypt a significant amount of letters. The output comes in the same form as the input, and will be 
+ * printed to the console and the output.txt file. The flow control of the function involves opening files,
+ * counting the frequency of each letter in the text, assigning the greatest of these 'E', and the following
+ * next highest 'T' and so on - giving each letter statistically the most probable outcome for decryption.
+ * The larger the given text, the better this function will be able to decrypt it. The output text in is the
+ * same form as the given input text and is printed to the console and to the output file.
+ *
  */
 void SubstitutionCipherDecryptionNoKey(void)
 {
     FILE *input, *output;
-    input = fopen(INPUT_FILE, "r");
-    if(input == NULL) {
+    input = fopen(INPUT_FILE, "r");                    //Opens the input.txt file for reading
+    if(input == NULL) {                                //If an error occurs opening the output file, a friendly error message will be printed and the functions will not do anything
         perror("fopen() ");
         return;
     }
-    output = fopen(OUTPUT_FILE, "w");
-    fseek(input, 386, 0);
-    char c;
+    output = fopen(OUTPUT_FILE, "w");                  //Opens the output.txt file for writing
+    if(output == NULL) {                               //If an error occurs opening the output file, a friendly error message will be printed and the functions will not do anything
+        perror("fopen() ");
+        return;
+    }
+    fseek(input, 386, 0);                              //Jumps to the given text to be decrypted in the input file
+    char c;                                            //This variable is assigned letters read
+    //Below - these variables are for the counter of each letter
     int A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0, K = 0, L = 0, M = 0, N = 0, O = 0, P = 0, Q = 0, R = 0, S = 0, T = 0, U = 0, V = 0, W = 0, X = 0, Y = 0, Z = 0;
     while(!feof(input)) {                              //While the file is not at the end, this loop will continue to run
         fscanf(input, "%c", &c);                       //Read a character
@@ -430,37 +499,37 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    printf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z);
-    //Below - this array takes the values that have been found by the previous while loop. This array
-    //must be initialised after the loop to hold the correct values rather than 0 which is the value
-    //of the variables before the loop
+    //Below - this array takes the values that have been found by the previous while loop
     int letters26[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z}; 
     int location, n, maximum = 0;                      //Location refers to place of the letter in the alphabet e.g. 'A'=0. 'n' is a counter, maximum is the total number of occurences
+    //Below - these variables will be assigned the new value for the letters in the text. They will be used to replace encrypted letters with new decrypted letters
     int nA, nB, nC, nD, nE, nF, nG, nH, nI, nJ, nK, nL, nM, nN, nO, nP, nQ, nR, nS, nT, nU, nV, nW, nX, nY;
+    //Below - these variables keep track of the position of letters that have already been assigned a new value after the for loop. This will avoid any letters being found as the greatest more than once
     int n1, n2, n3 , n4 , n5 , n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, n17, n18, n19, n20, n21, n22, n23, n24, n25;
+    //These for loops assign the most common letter the most probable decrypted letter. For each loop, the previous greatest values cannot be chosen, so the new greatest value is always the next greatest compared to the previous one
     for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
-        if(letters26[n] > maximum) {
+        if(letters26[n] > maximum) {                   //If the frequency of a letter is greater than the others so far. This condition finds the greatest letter
             location = n;
             n1 = n;
             maximum = letters26[n];
         }
     }
-    printf("%d\n", location);
-    nE = 65 + location;
-    maximum = 0;
+
+    nE = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters25[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
-        if(letters25[n] > maximum && n != n1) {
+        for(n = 0; n < 26; n++) {                          
+        if(letters25[n] > maximum && n != n1) {        //This added condition %% n != n1 means that the greatest cannot be the same as the previous loop, so the second greatest can be found
             location = n;
             n2 = n;
             maximum = letters25[n];
         }
     }
-    printf("%d\n", location);
-    nT = 65 + location;
-    maximum = 0;
+
+    nT = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters24[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters24[n] > maximum && n != n1 && n != n2) {
             location = n;
             n3 = n;
@@ -468,10 +537,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nA = 65 + n;
-    maximum = 0;
+    nA = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters23[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters23[n] > maximum && n != n1 && n != n2 && n != n3) {
             location = n;
             n4 = n;
@@ -479,10 +548,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nO = 65 + location;
-    maximum = 0;
+    nO = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters22[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters22[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4) {
             location = n;
             n5 = n;
@@ -490,10 +559,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nI = 65 + location;
-    maximum = 0;
+    nI = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters21[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters21[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5) {
             location = n;
             n6 = n;
@@ -501,10 +570,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nN = 65 + location;
-    maximum = 0;
+    nN = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters20[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters20[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6) {
             location = n;
             n7 = n;
@@ -512,10 +581,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nS = 65 + location;
-    maximum = 0;
+    nS = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters19[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters19[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7) {
             location = n;
             n8 = n;
@@ -523,10 +592,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nR = 65 + location;
-    maximum = 0;
+    nR = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters18[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters18[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8) {
             location = n;
             n9 = n;
@@ -534,10 +603,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nH = 65 + location;
-    maximum = 0;
+    nH = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters17[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters17[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9) {
             location = n;
             n10 = n;
@@ -545,10 +614,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nL = 65 + location;
-    maximum = 0;
+    nL = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters16[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters16[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10) {
             location = n;
             n11 = n;
@@ -556,8 +625,8 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nD = 65 + location;
-    maximum = 0;
+    nD = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters15[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
         for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
         if(letters15[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11) {
@@ -567,10 +636,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nC = 65 + location;
-    maximum = 0;
+    nC = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters14[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters14[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12) {
             location = n;
             n13 = n;
@@ -578,10 +647,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nU = 65 + location;
-    maximum = 0;
+    nU = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters13[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters13[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13) {
             location = n;
             n14 = n;
@@ -589,10 +658,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nM = 65 + location;
-    maximum = 0;
+    nM = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters12[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters12[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14) {
             location = n;
             n15 = n;
@@ -600,10 +669,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nF = 65 + location;
-    maximum = 0;
+    nF = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters11[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters11[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15) {
             location = n;
             n16 = n;
@@ -611,10 +680,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nP = 65 + location;
-    maximum = 0;
+    nP = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters10[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters10[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16) {
             location = n;
             n17 = n;
@@ -622,10 +691,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nG = 65 + location;
-    maximum = 0;
+    nG = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters9[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters9[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17) {
             location = n;
             n18 = n;
@@ -633,10 +702,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nW = 65 + location;
-    maximum = 0;
+    nW = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters8[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters8[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17 && n != n18) {
             location = n;
             n19 = n;
@@ -644,10 +713,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nY = 65 + location;
-    maximum = 0;
+    nY = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters7[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters7[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17 && n != n18 && n != n19) {
             location = n;
             n20 = n;
@@ -655,10 +724,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nB = 65 + location;
-    maximum = 0;
+    nB = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters6[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                         
         if(letters6[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17 && n != n18 && n != n19 && n != n20) {
             location = n;
             n21 = n;
@@ -666,10 +735,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nV = 65 + location;
-    maximum = 0;
+    nV = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters5[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters5[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17 && n != n18 && n != n19 && n != n20 && n != n21) {
             location = n;
             n22 = n;
@@ -677,10 +746,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nK = 65 + location;
-    maximum = 0;
+    nK = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters4[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters4[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17 && n != n18 && n != n19 && n != n20 && n != n21 && n != n22) {
             location = n;
             n23 = n;
@@ -688,10 +757,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nX = 65 + location;
-    maximum = 0;
+    nX = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters3[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters3[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17 && n != n18 && n != n19 && n != n20 && n != n21 && n != n22 && n != n23) {
             location = n;
             n24 = n;
@@ -699,10 +768,10 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nJ = 65 + location;
-    maximum = 0;
+    nJ = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters2[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters2[n] > maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17 && n != n18 && n != n19 && n != n20 && n != n21 && n != n22 && n != n23 && n != n24) {
             location = n;
             n25 = n;
@@ -710,19 +779,19 @@ void SubstitutionCipherDecryptionNoKey(void)
         }
     }
     
-    nQ = 65 + location;
-    maximum = 0;
+    nQ = 65 + location;                                //New value for most common letter that has not already been found
+    maximum = 0;                                       //Maximum set back to 0
     int letters1[26] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z};
-        for(n = 0; n < 26; n++) {                          //This loop runs through all the variables of the array and finds the most frequent letter and the number of times it occured
+        for(n = 0; n < 26; n++) {                          
         if(letters1[n] >= maximum && n != n1 && n != n2 && n != n3 && n != n4 && n != n5 && n != n6 && n != n7 && n != n8 && n != n9 && n != n10 && n != n11 && n != n12 && n != n13 && n != n14 && n != n15 && n != n16 && n != n17 && n != n18 && n != n19 && n != n20 && n != n21 && n != n22 && n != n23 && n != n24 && n != n25) {
             location = n;
             maximum = letters1[n];
         }
     }
     
-    Z = 65 + location;
-    fseek(input, 386, 0);
-    while(!feof(input)) {
+    Z = 65 + location;                                 //New value for most common letter that has not already been found
+    fseek(input, 386, 0);                              //Jumps back to the start of the given encrypted text
+    while(!feof(input)) {                              //This loop assigns each letter its new letter according to statistical probablity. Ouput is printed to the console and the output file. The loop ends when the end of the file is reached (feof(input) will equal 1)
         fscanf(input, "%c", &c);
         if(c == nE) {
             printf("E");
@@ -802,14 +871,14 @@ void SubstitutionCipherDecryptionNoKey(void)
         } else if(c == Z) {
             printf("Z");
             fprintf(output, "Z");
-        } else {
+        } else {                                       //If the character is not a letter e.g. c == '!' or '?' or ',' etc... Print it
             printf("%c", c);
             fprintf(output, "%c", c);
         }
     }
     
-    fclose(input);
-    fclose(output);
+    fclose(input);                                     //Closes the input file
+    fclose(output);                                    //Closes the output file
     return;
 }
 
